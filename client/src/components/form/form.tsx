@@ -1,20 +1,41 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@chakra-ui/react";
 import { Stack } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@apollo/client";
 import { gql } from "@apollo/client";
+import { Product } from "@/types";
 
-const Form = () => {
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("")
-  const [image, setImage] = useState("");
+interface FormProps {
+  initialData?: Product;
+  type: string;
+}
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [createProduct, { data, loading, error }] = useMutation(gql`
+const Form = ({ initialData, type }: FormProps) => {
+  const [name, setName] = useState(initialData?.name || "");
+  const [slug, setSlug] = useState(initialData?.slug || "");
+  const [description, setDescription] = useState(
+    initialData?.description || ""
+  );
+  const [price, setPrice] = useState(initialData?.price || "");
+  const [image, setImage] = useState(initialData?.image || "");
+
+  useEffect(() => {
+    if (initialData) {
+      setName(initialData?.name);
+      setSlug(initialData?.slug);
+      setDescription(initialData?.description);
+      setPrice(initialData?.price);
+      setImage(initialData.image);
+    }
+  }, [initialData]);
+
+  const [
+    createProduct,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    { data: dataCreate, loading: loadingCreate, error: errorCreate },
+  ] = useMutation(gql`
     mutation CreateProduct($createProductData: CreateProductInput!) {
       createProduct(createProductData: $createProductData) {
         id
@@ -29,24 +50,64 @@ const Form = () => {
     }
   `);
 
+  const [
+    updateProduct,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    { data: dataUpdate, loading: loadingUpdate, error: errorUpdate },
+  ] = useMutation(gql`
+    mutation UpdateProduct($id: Int!, $updateProductData: UpdateProductInput!) {
+      updateProduct(id: $id, updateProductData: $updateProductData) {
+        id
+        slug
+        name
+        price
+        image
+        createdAt
+        updatedAt
+        deletedAt
+      }
+    }
+  `);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (e: any) => {
     e.preventDefault();
-    try {
-      const result = await createProduct({
-        variables: {
-          createProductData: {
-            slug,
-            name,
-            price: Number(price),
-            description,
-            image,
+
+    if (type === "create") {
+      try {
+        const result = await createProduct({
+          variables: {
+            createProductData: {
+              slug,
+              name,
+              price: Number(price),
+              description,
+              image,
+            },
           },
-        },
-      });
-      console.log("Product created:", result);
-    } catch (err) {
-      console.error("Error creating product:", err);
+        });
+        console.log("Product created:", result);
+      } catch (err) {
+        console.error("Error creating product:", err);
+      }
+    } else {
+      try {
+        const result = await updateProduct({
+          variables: {
+            id: initialData?.id,
+            updateProductData: {
+              slug,
+              name,
+              price: Number(price),
+              description,
+              image,
+            },
+          },
+        });
+        console.log("Product updated:", result);
+      } catch (err) {
+        console.error("Error creating product:", err);
+      }
     }
   };
 
