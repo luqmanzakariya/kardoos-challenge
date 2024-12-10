@@ -32,21 +32,9 @@ Buatkan web aplikasi yang menampilkan product list, product detail dan form untu
     - Product create/update dengan rest api multipart form data
     - Design berbeda antara Desktop dengan Mobile version
 
-## Run Frontend Application
-### 1. Install dependencies:
-```console
-npm install
-```
-### 2. Run the application:
-```console
-npm run dev
-```
-
-Open [http://localhost:3333](http://localhost:3333) with your browser to see the result.
-
 ## Run Backend application
 ### 1. Prepare database via docker (optional):
-Make sure you have installed docker then go to folder "./
+Make sure you have installed docker then go to folder "./server/.docker
 ```console
 docker compose up -d
 ```
@@ -58,6 +46,17 @@ npm install
 ```console
 npm start:dev
 ```
-
 The API will start on port 3000 and can be accessed at http://localhost:3000
 
+## Run Frontend Application
+### 1. Install dependencies:
+The minimum node version required is Node.20.x
+```console
+npm install
+```
+### 2. Run the application:
+```console
+npm run dev
+```
+
+Open [http://localhost:3333](http://localhost:3333) with your browser to see the result.
